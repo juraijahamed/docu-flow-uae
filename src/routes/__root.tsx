@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -77,14 +78,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Quick Typing — Invoice Generator" },
+      {
+        name: "description",
+        content:
+          "Fast, professional invoicing for Quick Typing document clearing services in UAE. Create, print and manage VAT invoices in seconds.",
+      },
+      { name: "author", content: "Quick Typing" },
+      { property: "og:title", content: "Quick Typing — Invoice Generator" },
+      {
+        property: "og:description",
+        content:
+          "Create professional UAE VAT invoices for typing, PRO and document clearing services.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -119,8 +127,49 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen bg-background text-foreground">
+        <AppNav />
+        <main className="mx-auto w-full max-w-6xl px-4 py-6 md:py-10">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </main>
+      </div>
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
+  );
+}
+
+function AppNav() {
+  return (
+    <header className="no-print sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-sm">
+            Q
+          </div>
+          <div className="leading-tight">
+            <div className="text-sm font-semibold tracking-tight">Quick Typing</div>
+            <div className="text-[11px] text-muted-foreground">Invoice Studio</div>
+          </div>
+        </Link>
+        <nav className="flex items-center gap-1 text-sm">
+          <NavItem to="/">Dashboard</NavItem>
+          <NavItem to="/invoices/new">New Invoice</NavItem>
+          <NavItem to="/settings">Settings</NavItem>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function NavItem({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="rounded-md px-3 py-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors [&.active]:bg-primary [&.active]:text-primary-foreground"
+      activeOptions={{ exact: to === "/" }}
+    >
+      {children}
+    </Link>
   );
 }
