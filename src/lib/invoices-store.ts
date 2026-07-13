@@ -126,18 +126,6 @@ export function bumpInvoiceNumber() {
   saveCompany({ ...c, nextInvoiceNumber: c.nextInvoiceNumber + 1 });
 }
 
-export function useInvoices(): Invoice[] {
-  return useSyncExternalStore(
-    subscribe,
-    () => {
-      const v = window.localStorage.getItem(INV_KEY);
-      return v ?? "[]";
-    },
-    () => "[]",
-  ) as unknown as string extends never ? Invoice[] : Invoice[]; // eslint-disable-line
-}
-
-// Simpler hook that returns parsed array with stable snapshot
 let invSnapshot: { raw: string; parsed: Invoice[] } = { raw: "[]", parsed: [] };
 export function useInvoiceList(): Invoice[] {
   return useSyncExternalStore(
