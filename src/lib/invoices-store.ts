@@ -48,6 +48,8 @@ export interface CompanySettings {
 
 const INV_KEY = "qt.invoices.v1";
 const CO_KEY = "qt.company.v1";
+const PRESETS_KEY = "qt.presets.v1";
+const VAT_KEY = "qt.vat.v1";
 
 export const defaultCompany: CompanySettings = {
   name: "Quick Typing",
@@ -207,3 +209,56 @@ export const SERVICE_PRESETS = [
   "Arabic / English Typing",
   "Memorandum Agreement Typing",
 ];
+
+let presetsSnapshot: { raw: string; parsed: string[] } = {
+  raw: "",
+  parsed: SERVICE_PRESETS,
+};
+export function getPresets(): string[] {
+  return read<string[]>(PRESETS_KEY, SERVICE_PRESETS);
+}
+export function addPreset(name: string) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  const all = getPresets();
+  if (all.some((p) => p.toLowerCase() === trimmed.toLowerCase())) return;
+  write(PRESETS_KEY, [...all, trimmed]);
+}
+export function removePreset(name: string) {
+  write(
+    PRESETS_KEY,
+    getPresets().filter((p) => p !== name),
+  );
+}
+export function usePresets(): string[] {
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      const raw =
+        (typeof window !== "undefined" &&
+          window.localStorage.getItem(PRESETS_KEY)) ||
+        "";
+      if (raw !== presetsSnapshot.raw) {
+        try {
+          presetsSnapshot = {
+            raw,
+            parsed: raw
+              ? (JSON.parse(raw) as string[])
+              : SERVICE_PRESETS,
+          };
+        } catch {
+          presetsSnapshot = { raw, parsed: SERVICE_PRESETS };
+        }
+      }
+      return presetsSnapshot.parsed;
+    },
+    () => presetsSnapshot.parsed,
+  );
+}
+
+export function getDefaultVat(): number {
+  return read<number>(VAT_KEY, 5);
+}
+export function saveDefaultVat(rate: number) {
+  write(VAT_KEY, rate);
+}
