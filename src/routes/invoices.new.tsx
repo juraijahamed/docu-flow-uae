@@ -428,6 +428,7 @@ function ServicePicker({
           onChange(e.target.value);
           setOpen(true);
         }}
+        onMouseEnter={() => setOpen(true)}
         onFocus={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === "Escape") setOpen(false);
@@ -482,7 +483,7 @@ function ServicePicker({
             }}
           >
             {value.trim()
-              ? `+ Add "${value.trim()}" as a service`
+              ? `+ Add Other — "${value.trim()}"`
               : "+ Add Service — type a name above"}
           </button>
         </div>
