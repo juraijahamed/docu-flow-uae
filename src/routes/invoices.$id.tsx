@@ -262,8 +262,15 @@ function InvoiceView() {
           </section>
         )}
 
-        <footer className="mt-10 border-t border-border/60 pt-4 text-center text-xs text-muted-foreground">
-          This is a computer-generated invoice. {company.name} · {company.website}
+        <footer className="mt-10 border-t border-border/60 pt-4">
+          <img
+            src={servicesBanner.url}
+            alt="Quick Documents Clearing — our services: ICA, Amer, UAE Government, UAQ Government, Tas-heel, RTA, ICAM"
+            className="w-full rounded-md object-contain"
+          />
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            This is a computer-generated invoice. {company.name} · {company.website}
+          </p>
         </footer>
       </article>
     </div>
