@@ -19,6 +19,7 @@ import {
   type Invoice,
 } from "@/lib/invoices-store";
 import brandLogo from "@/assets/quick-documents-clearing-logo.png";
+import servicesBanner from "@/assets/quick-services-banner.jpg.asset.json";
 
 export const Route = createFileRoute("/invoices/$id")({
   head: () => ({
