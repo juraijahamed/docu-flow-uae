@@ -52,9 +52,9 @@ const PRESETS_KEY = "qt.presets.v1";
 const VAT_KEY = "qt.vat.v1";
 
 export const defaultCompany: CompanySettings = {
-  name: "Quick Typing",
-  arabicName: "كويك لتخليص المعاملات",
-  tagline: "Document Clearing & Typing Services",
+  name: "Quick Documents Clearing",
+  arabicName: "كويك لتخليص المعاملات الكتابة",
+  tagline: "Documents Clearing & Typing Services",
   phone: "+971 6 5299746, +971 58 8308804",
   email: "quicktypinguaq@gmail.com",
   website: "quicktypinguaq.ae",
@@ -112,7 +112,20 @@ export function deleteInvoice(id: string) {
 }
 
 export function getCompany(): CompanySettings {
-  return { ...defaultCompany, ...read<Partial<CompanySettings>>(CO_KEY, {}) };
+  const saved = read<Partial<CompanySettings>>(CO_KEY, {});
+  return {
+    ...defaultCompany,
+    ...saved,
+    name: saved.name === "Quick Typing" ? defaultCompany.name : saved.name || defaultCompany.name,
+    arabicName:
+      saved.arabicName === "كويك لتخليص المعاملات"
+        ? defaultCompany.arabicName
+        : saved.arabicName || defaultCompany.arabicName,
+    tagline:
+      saved.tagline === "Document Clearing & Typing Services"
+        ? defaultCompany.tagline
+        : saved.tagline || defaultCompany.tagline,
+  };
 }
 export function saveCompany(c: CompanySettings) {
   write(CO_KEY, c);
@@ -160,7 +173,7 @@ export function useCompany(): CompanySettings {
         try {
           coSnapshot = {
             raw,
-            parsed: { ...defaultCompany, ...(raw ? (JSON.parse(raw) as Partial<CompanySettings>) : {}) },
+            parsed: getCompany(),
           };
         } catch {
           coSnapshot = { raw, parsed: defaultCompany };

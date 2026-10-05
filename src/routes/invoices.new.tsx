@@ -32,8 +32,12 @@ import {
 export const Route = createFileRoute("/invoices/new")({
   head: () => ({
     meta: [
-      { title: "New Invoice — Quick Typing" },
-      { name: "description", content: "Create a new VAT invoice." },
+      { title: "New Invoice — Quick Documents Clearing" },
+      { name: "description", content: "Create a new UAE VAT invoice for Quick Documents Clearing." },
+      { property: "og:title", content: "New Invoice — Quick Documents Clearing" },
+      { property: "og:description", content: "Create a new UAE VAT invoice for Quick Documents Clearing." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: NewInvoice,
