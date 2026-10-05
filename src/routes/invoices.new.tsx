@@ -428,6 +428,7 @@ function ServicePicker({
           onChange(e.target.value);
           setOpen(true);
         }}
+        onMouseEnter={() => setOpen(true)}
         onFocus={() => setOpen(true)}
         onKeyDown={(e) => {
           if (e.key === "Escape") setOpen(false);
