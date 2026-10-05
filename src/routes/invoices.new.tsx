@@ -14,13 +14,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  addPreset,
   bumpInvoiceNumber,
   computeTotals,
   formatAED,
+  getDefaultVat,
   nextInvoiceNumber,
+  saveDefaultVat,
   saveInvoice,
-  SERVICE_PRESETS,
   useCompany,
+  usePresets,
   type Invoice,
   type LineItem,
 } from "@/lib/invoices-store";
@@ -46,13 +49,14 @@ function emptyItem(): LineItem {
 function NewInvoice() {
   const navigate = useNavigate();
   useCompany(); // subscribe (for numbering freshness)
+  const presets = usePresets();
 
   const [number] = useState(() => nextInvoiceNumber());
   const [issueDate, setIssueDate] = useState(
     () => new Date().toISOString().slice(0, 10),
   );
   const [dueDate, setDueDate] = useState("");
-  const [status, setStatus] = useState<Invoice["status"]>("draft");
+  const [status, setStatus] = useState<Invoice["status"]>("paid");
 
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -61,9 +65,25 @@ function NewInvoice() {
   const [clientAddress, setClientAddress] = useState("");
 
   const [items, setItems] = useState<LineItem[]>([emptyItem()]);
-  const [vatRate, setVatRate] = useState(5);
+  const [vatRate, setVatRate] = useState(() => getDefaultVat());
   const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("Thank you for your business.");
+  const [newService, setNewService] = useState("");
+  const [addingService, setAddingService] = useState(false);
+
+  function handleVatChange(v: number) {
+    setVatRate(v);
+    saveDefaultVat(v);
+  }
+
+  function handleAddService() {
+    const trimmed = newService.trim();
+    if (!trimmed) return;
+    addPreset(trimmed);
+    setNewService("");
+    setAddingService(false);
+    toast.success(`"${trimmed}" added to services`);
+  }
 
   const totals = useMemo(
     () => computeTotals({ items, vatRate, discount }),
@@ -186,13 +206,36 @@ function NewInvoice() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle>Line Items</CardTitle>
-              <Button size="sm" variant="outline" onClick={addItem}>
-                + Add Item
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setAddingService((v) => !v)}
+                >
+                  + Add Service
+                </Button>
+                <Button size="sm" variant="outline" onClick={addItem}>
+                  + Add Item
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
+              {addingService && (
+                <div className="flex gap-2 rounded-lg border border-dashed border-border p-3">
+                  <Input
+                    value={newService}
+                    onChange={(e) => setNewService(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddService()}
+                    placeholder="New service name (e.g. Golden Visa Typing)"
+                    autoFocus
+                  />
+                  <Button size="sm" onClick={handleAddService}>
+                    Save
+                  </Button>
+                </div>
+              )}
               <div className="hidden grid-cols-12 gap-2 text-xs font-medium text-muted-foreground md:grid">
                 <div className="col-span-6">Description</div>
                 <div className="col-span-2">Qty</div>
@@ -260,7 +303,7 @@ function NewInvoice() {
                 );
               })}
               <datalist id="service-presets">
-                {SERVICE_PRESETS.map((s) => (
+                {presets.map((s) => (
                   <option key={s} value={s} />
                 ))}
               </datalist>
@@ -324,7 +367,9 @@ function NewInvoice() {
                     min={0}
                     step="0.5"
                     value={vatRate}
-                    onChange={(e) => setVatRate(Number(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleVatChange(Number(e.target.value) || 0)
+                    }
                   />
                 </Field>
                 <Field label="Discount (AED)">
