@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import {
   formatAED,
   getDefaultVat,
   nextInvoiceNumber,
+  removePreset,
   saveDefaultVat,
   saveInvoice,
   useCompany,
