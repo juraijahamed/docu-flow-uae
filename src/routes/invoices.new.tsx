@@ -227,13 +227,12 @@ function NewInvoice() {
                     className="grid grid-cols-1 gap-2 rounded-lg border border-border/60 p-3 md:grid-cols-12 md:border-0 md:p-0"
                   >
                     <div className="md:col-span-6">
-                      <Input
-                        list="service-presets"
+                      <ServicePicker
                         value={it.description}
-                        onChange={(e) =>
-                          updateItem(it.id, { description: e.target.value })
-                        }
-                        placeholder="Service description"
+                        onChange={(v) => updateItem(it.id, { description: v })}
+                        presets={presets}
+                        onAdd={handleAddService}
+                        onRemove={removePreset}
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -279,11 +278,6 @@ function NewInvoice() {
                   </div>
                 );
               })}
-              <datalist id="service-presets">
-                {presets.map((s) => (
-                  <option key={s} value={s} />
-                ))}
-              </datalist>
             </CardContent>
           </Card>
 
