@@ -14,13 +14,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  addPreset,
   bumpInvoiceNumber,
   computeTotals,
   formatAED,
+  getDefaultVat,
   nextInvoiceNumber,
+  saveDefaultVat,
   saveInvoice,
-  SERVICE_PRESETS,
   useCompany,
+  usePresets,
   type Invoice,
   type LineItem,
 } from "@/lib/invoices-store";
@@ -46,13 +49,14 @@ function emptyItem(): LineItem {
 function NewInvoice() {
   const navigate = useNavigate();
   useCompany(); // subscribe (for numbering freshness)
+  const presets = usePresets();
 
   const [number] = useState(() => nextInvoiceNumber());
   const [issueDate, setIssueDate] = useState(
     () => new Date().toISOString().slice(0, 10),
   );
   const [dueDate, setDueDate] = useState("");
-  const [status, setStatus] = useState<Invoice["status"]>("draft");
+  const [status, setStatus] = useState<Invoice["status"]>("paid");
 
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -61,9 +65,25 @@ function NewInvoice() {
   const [clientAddress, setClientAddress] = useState("");
 
   const [items, setItems] = useState<LineItem[]>([emptyItem()]);
-  const [vatRate, setVatRate] = useState(5);
+  const [vatRate, setVatRate] = useState(() => getDefaultVat());
   const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("Thank you for your business.");
+  const [newService, setNewService] = useState("");
+  const [addingService, setAddingService] = useState(false);
+
+  function handleVatChange(v: number) {
+    setVatRate(v);
+    saveDefaultVat(v);
+  }
+
+  function handleAddService() {
+    const trimmed = newService.trim();
+    if (!trimmed) return;
+    addPreset(trimmed);
+    setNewService("");
+    setAddingService(false);
+    toast.success(`"${trimmed}" added to services`);
+  }
 
   const totals = useMemo(
     () => computeTotals({ items, vatRate, discount }),
