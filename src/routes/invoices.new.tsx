@@ -69,20 +69,19 @@ function NewInvoice() {
   const [vatRate, setVatRate] = useState(() => getDefaultVat());
   const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("Thank you for your business.");
-  const [newService, setNewService] = useState("");
-  const [addingService, setAddingService] = useState(false);
 
   function handleVatChange(v: number) {
     setVatRate(v);
     saveDefaultVat(v);
   }
 
-  function handleAddService() {
-    const trimmed = newService.trim();
-    if (!trimmed) return;
+  function handleAddService(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      toast.error("Type a service name first");
+      return;
+    }
     addPreset(trimmed);
-    setNewService("");
-    setAddingService(false);
     toast.success(`"${trimmed}" added to services`);
   }
 
