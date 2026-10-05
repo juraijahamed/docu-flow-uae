@@ -15,8 +15,12 @@ import {
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — Quick Typing" },
-      { name: "description", content: "Company details for invoicing." },
+      { title: "Settings — Quick Documents Clearing" },
+      { name: "description", content: "Manage Quick Documents Clearing invoice details." },
+      { property: "og:title", content: "Settings — Quick Documents Clearing" },
+      { property: "og:description", content: "Manage Quick Documents Clearing invoice details." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SettingsPage,

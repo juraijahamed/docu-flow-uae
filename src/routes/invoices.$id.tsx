@@ -18,12 +18,17 @@ import {
   useCompany,
   type Invoice,
 } from "@/lib/invoices-store";
+import brandLogo from "@/assets/quick-documents-clearing-logo.png";
 
 export const Route = createFileRoute("/invoices/$id")({
   head: () => ({
     meta: [
-      { title: "Invoice — Quick Typing" },
-      { name: "description", content: "Invoice details and print view." },
+      { title: "Invoice — Quick Documents Clearing" },
+      { name: "description", content: "Quick Documents Clearing invoice details and print view." },
+      { property: "og:title", content: "Invoice — Quick Documents Clearing" },
+      { property: "og:description", content: "Quick Documents Clearing invoice details and print view." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: InvoiceView,
@@ -106,19 +111,11 @@ function InvoiceView() {
       <article className="print-area mx-auto max-w-[820px] rounded-xl border border-border/60 bg-card p-8 shadow-sm md:p-12">
         <header className="flex flex-col gap-6 border-b border-border/60 pb-6 md:flex-row md:items-start md:justify-between">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground text-lg font-bold">
-                Q
-              </div>
-              <div>
-                <div className="text-xl font-bold tracking-tight">
-                  {company.name}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {company.tagline}
-                </div>
-              </div>
-            </div>
+            <img
+              src={brandLogo}
+              alt="Quick Documents Clearing"
+              className="h-auto w-full max-w-[430px] object-contain object-left"
+            />
             <div className="mt-4 space-y-0.5 text-xs text-muted-foreground">
               <div>{company.address}</div>
               <div>{company.phone}</div>

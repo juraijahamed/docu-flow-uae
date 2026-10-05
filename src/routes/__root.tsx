@@ -13,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import brandLogo from "@/assets/quick-documents-clearing-logo.png";
+import brandIcon from "@/assets/quick-documents-clearing-icon.png";
 
 function NotFoundComponent() {
   return (
@@ -82,14 +84,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Quick Typing — Invoice Generator" },
+      { title: "Quick Documents Clearing — Invoice Generator" },
       {
         name: "description",
         content:
-          "Fast, professional invoicing for Quick Typing document clearing services in UAE. Create, print and manage VAT invoices in seconds.",
+          "Professional UAE VAT invoicing for Quick Documents Clearing services.",
       },
-      { name: "author", content: "Quick Typing" },
-      { property: "og:title", content: "Quick Typing — Invoice Generator" },
+      { name: "author", content: "Quick Documents Clearing" },
+      { property: "og:title", content: "Quick Documents Clearing — Invoice Generator" },
       {
         property: "og:description",
         content:
@@ -103,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
   shellComponent: RootShell,
@@ -147,14 +149,13 @@ function AppNav() {
   return (
     <header className="no-print sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold shadow-sm">
-            Q
-          </div>
-          <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">Quick Typing</div>
-            <div className="text-[11px] text-muted-foreground">Invoice Studio</div>
-          </div>
+        <Link to="/" className="flex min-w-0 items-center gap-3 group">
+          <img src={brandIcon} alt="" className="h-11 w-11 shrink-0 object-contain sm:hidden" />
+          <img
+            src={brandLogo}
+            alt="Quick Documents Clearing"
+            className="hidden h-12 w-auto max-w-[320px] object-contain sm:block"
+          />
         </Link>
         <nav className="flex items-center gap-1 text-sm">
           <NavItem to="/">Dashboard</NavItem>

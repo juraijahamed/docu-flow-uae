@@ -52,9 +52,9 @@ const PRESETS_KEY = "qt.presets.v1";
 const VAT_KEY = "qt.vat.v1";
 
 export const defaultCompany: CompanySettings = {
-  name: "Quick Typing",
-  arabicName: "كويك لتخليص المعاملات",
-  tagline: "Document Clearing & Typing Services",
+  name: "Quick Documents Clearing",
+  arabicName: "كويك لتخليص المعاملات الكتابة",
+  tagline: "Documents Clearing & Typing Services",
   phone: "+971 6 5299746, +971 58 8308804",
   email: "quicktypinguaq@gmail.com",
   website: "quicktypinguaq.ae",

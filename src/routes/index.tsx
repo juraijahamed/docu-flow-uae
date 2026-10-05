@@ -23,6 +23,16 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Invoice Dashboard — Quick Documents Clearing" },
+      { name: "description", content: "Create and manage VAT invoices for Quick Documents Clearing." },
+      { property: "og:title", content: "Invoice Dashboard — Quick Documents Clearing" },
+      { property: "og:description", content: "Create and manage VAT invoices for Quick Documents Clearing." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
@@ -56,7 +66,7 @@ function Index() {
       <section className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Welcome back, {company.name}
+            {company.name}
           </h1>
           <p className="mt-1 text-muted-foreground">
             Create, track and print VAT-ready invoices for your typing and document clearing services.
