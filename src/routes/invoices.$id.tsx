@@ -186,8 +186,13 @@ function InvoiceView() {
 
         <section className="overflow-hidden rounded-lg border border-border/60">
           <table className="w-full text-sm">
-            <thead className="bg-secondary text-secondary-foreground">
-              <tr>
+            <thead>
+              <tr className="bg-primary text-primary-foreground">
+                <th colSpan={4} className="px-3 py-3 text-center text-base font-bold uppercase">
+                  {inv.client.name}
+                </th>
+              </tr>
+              <tr className="bg-secondary text-secondary-foreground">
                 <th className="p-3 text-left font-semibold">Description</th>
                 <th className="p-3 text-right font-semibold w-16">Qty</th>
                 <th className="p-3 text-right font-semibold w-28">Price</th>
