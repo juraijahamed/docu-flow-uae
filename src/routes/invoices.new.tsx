@@ -206,13 +206,36 @@ function NewInvoice() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle>Line Items</CardTitle>
-              <Button size="sm" variant="outline" onClick={addItem}>
-                + Add Item
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setAddingService((v) => !v)}
+                >
+                  + Add Service
+                </Button>
+                <Button size="sm" variant="outline" onClick={addItem}>
+                  + Add Item
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
+              {addingService && (
+                <div className="flex gap-2 rounded-lg border border-dashed border-border p-3">
+                  <Input
+                    value={newService}
+                    onChange={(e) => setNewService(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddService()}
+                    placeholder="New service name (e.g. Golden Visa Typing)"
+                    autoFocus
+                  />
+                  <Button size="sm" onClick={handleAddService}>
+                    Save
+                  </Button>
+                </div>
+              )}
               <div className="hidden grid-cols-12 gap-2 text-xs font-medium text-muted-foreground md:grid">
                 <div className="col-span-6">Description</div>
                 <div className="col-span-2">Qty</div>
@@ -280,7 +303,7 @@ function NewInvoice() {
                 );
               })}
               <datalist id="service-presets">
-                {SERVICE_PRESETS.map((s) => (
+                {presets.map((s) => (
                   <option key={s} value={s} />
                 ))}
               </datalist>
@@ -344,7 +367,9 @@ function NewInvoice() {
                     min={0}
                     step="0.5"
                     value={vatRate}
-                    onChange={(e) => setVatRate(Number(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleVatChange(Number(e.target.value) || 0)
+                    }
                   />
                 </Field>
                 <Field label="Discount (AED)">
