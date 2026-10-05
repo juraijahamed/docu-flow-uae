@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import {
   formatAED,
   getDefaultVat,
   nextInvoiceNumber,
+  removePreset,
   saveDefaultVat,
   saveInvoice,
   useCompany,
@@ -68,20 +69,19 @@ function NewInvoice() {
   const [vatRate, setVatRate] = useState(() => getDefaultVat());
   const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("Thank you for your business.");
-  const [newService, setNewService] = useState("");
-  const [addingService, setAddingService] = useState(false);
 
   function handleVatChange(v: number) {
     setVatRate(v);
     saveDefaultVat(v);
   }
 
-  function handleAddService() {
-    const trimmed = newService.trim();
-    if (!trimmed) return;
+  function handleAddService(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      toast.error("Type a service name first");
+      return;
+    }
     addPreset(trimmed);
-    setNewService("");
-    setAddingService(false);
     toast.success(`"${trimmed}" added to services`);
   }
 
@@ -208,34 +208,11 @@ function NewInvoice() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2">
               <CardTitle>Line Items</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setAddingService((v) => !v)}
-                >
-                  + Add Service
-                </Button>
-                <Button size="sm" variant="outline" onClick={addItem}>
-                  + Add Item
-                </Button>
-              </div>
+              <Button size="sm" variant="outline" onClick={addItem}>
+                + Add Item
+              </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {addingService && (
-                <div className="flex gap-2 rounded-lg border border-dashed border-border p-3">
-                  <Input
-                    value={newService}
-                    onChange={(e) => setNewService(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddService()}
-                    placeholder="New service name (e.g. Golden Visa Typing)"
-                    autoFocus
-                  />
-                  <Button size="sm" onClick={handleAddService}>
-                    Save
-                  </Button>
-                </div>
-              )}
               <div className="hidden grid-cols-12 gap-2 text-xs font-medium text-muted-foreground md:grid">
                 <div className="col-span-6">Description</div>
                 <div className="col-span-2">Qty</div>
@@ -250,13 +227,12 @@ function NewInvoice() {
                     className="grid grid-cols-1 gap-2 rounded-lg border border-border/60 p-3 md:grid-cols-12 md:border-0 md:p-0"
                   >
                     <div className="md:col-span-6">
-                      <Input
-                        list="service-presets"
+                      <ServicePicker
                         value={it.description}
-                        onChange={(e) =>
-                          updateItem(it.id, { description: e.target.value })
-                        }
-                        placeholder="Service description"
+                        onChange={(v) => updateItem(it.id, { description: v })}
+                        presets={presets}
+                        onAdd={handleAddService}
+                        onRemove={removePreset}
                       />
                     </div>
                     <div className="md:col-span-2">
@@ -302,11 +278,6 @@ function NewInvoice() {
                   </div>
                 );
               })}
-              <datalist id="service-presets">
-                {presets.map((s) => (
-                  <option key={s} value={s} />
-                ))}
-              </datalist>
             </CardContent>
           </Card>
 
@@ -406,6 +377,112 @@ function NewInvoice() {
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ServicePicker({
+  value,
+  onChange,
+  presets,
+  onAdd,
+  onRemove,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  presets: string[];
+  onAdd: (name: string) => void;
+  onRemove: (name: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const query = value.trim().toLowerCase();
+  const filtered = useMemo(
+    () =>
+      query
+        ? presets.filter((p) => p.toLowerCase().includes(query))
+        : presets,
+    [presets, query],
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [open]);
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <Input
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setOpen(false);
+        }}
+        placeholder="Service description"
+        autoComplete="off"
+      />
+      {open && (
+        <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-64 overflow-y-auto rounded-md border border-border bg-popover text-popover-foreground shadow-md">
+          {filtered.length === 0 && (
+            <div className="px-3 py-2 text-xs text-muted-foreground">
+              No matching services
+            </div>
+          )}
+          {filtered.map((s) => (
+            <div
+              key={s}
+              className="flex items-center border-b border-border/50 last:border-b-0"
+            >
+              <button
+                type="button"
+                className="flex-1 truncate px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                onClick={() => {
+                  onChange(s);
+                  setOpen(false);
+                }}
+              >
+                {s}
+              </button>
+              <button
+                type="button"
+                aria-label={`Delete ${s}`}
+                title={`Delete ${s}`}
+                className="mx-1 rounded px-1.5 py-1 text-xs text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => onRemove(s)}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className={`w-full px-3 py-2 text-left text-sm font-medium border-t border-border/50 ${
+              value.trim()
+                ? "text-primary hover:bg-accent hover:text-accent-foreground"
+                : "text-muted-foreground"
+            }`}
+            onClick={() => {
+              if (!value.trim()) return;
+              onAdd(value);
+              setOpen(false);
+            }}
+          >
+            {value.trim()
+              ? `+ Add "${value.trim()}" as a service`
+              : "+ Add Service — type a name above"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
