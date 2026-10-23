@@ -1,15 +1,49 @@
 {
-  "name": "tanstack_start_ts",
+  "name": "docuflow-uae",
+  "version": "1.0.0",
+  "description": "DocuFlow UAE — Offline Desktop Invoicing Application",
+  "main": "dist-electron/main.js",
   "private": true,
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "dev": "vite --config vite.config.electron.ts",
+    "build": "vite build --config vite.config.electron.ts",
+    "build:dev": "vite build --config vite.config.electron.ts --mode development",
+    "electron:compile": "tsc -p tsconfig.electron.json && node -e \"import('fs').then(fs => fs.writeFileSync('dist-electron/package.json', JSON.stringify({ type: 'commonjs' })))\"",
+    "electron:dev": "npm run electron:compile && electron .",
+    "electron:build": "npm run build && npm run electron:compile",
+    "dist:win": "npm run electron:build && electron-builder --win",
+    "test": "node --test test/**/*.test.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
+  },
+  "build": {
+    "appId": "ae.quicktyping.docuflow",
+    "productName": "DocuFlow UAE",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "public/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "public/favicon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DocuFlow UAE"
+    }
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -72,6 +106,8 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
